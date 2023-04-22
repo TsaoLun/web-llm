@@ -81,12 +81,58 @@ We have tested it on windows and mac, you will need a gpu with about 6.4G memory
   <li>Launch Chrome Canary. You are recommended to launch from terminal with the following command (or replace Chrome Canary with Chrome):
     <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary --enable-dawn-features=disable_robustness
 </code></pre></div>    </div>
-    <p>This command turns off the robustness check from Chrome Canary that slows down image generation to times. It is not necessary, but we strongly recommend you to start Chrome with this command.</p>
+    <p>This command turns off the robustness check from Chrome Canary that slows down chatbot reply to times. It is not necessary, but we strongly recommend you to start Chrome with this command.</p>
   </li>
   <li>Enter your inputs, click “Send” – we are ready to go! The chat bot will first fetch model parameters into local cache. The download may take a few minutes, only for the first run. The subsequent refreshes and runs will be faster.</li>
 </ul>
 
-<p>The chat model is based on <a href="https://huggingface.co/lmsys/vicuna-7b-delta-v0">vicuna-7b-v0</a> model. More model support are on the way.</p>
+<h2 id="chat-demo">Chat Demo</h2>
+
+<p>The chat demo is based on <a href="https://huggingface.co/lmsys/vicuna-7b-delta-v1.1">vicuna-7b-v1.1</a> model. More model support are on the way.</p>
+
+<script>
+  var tvmjsGlobalEnv = tvmjsGlobalEnv || {};
+</script>
+
+<script type="module">
+  async function getTokenizer(url) {
+    const mod = await import("./dist/sentencepiece/index.js");
+    return await mod.sentencePieceProcessor(url);
+  }
+  tvmjsGlobalEnv.sentencePieceProcessor = getTokenizer;
+</script>
+
+<script>
+  function handleChatUIInputEnter(event) {
+    if (event.keyCode === 13) {
+      tvmjsGlobalEnv.asyncOnGenerate();
+    }
+  }
+  async function getTokenizer(url) {
+    const mod = await import("./dist/sentencepiece/index.js");
+    return await mod.sentencePieceProcessor(url);
+  }
+  tvmjsGlobalEnv.sentencePieceProcessor = getTokenizer;
+</script>
+
+<script src="dist/llm_chat.js"></script>
+
+<link href="dist/llm_chat.css" rel="stylesheet" type="text/css" />
+
+<div class="chatui">
+  <div class="chatui-chat" id="chatui-chat" height="100">
+  </div>
+
+  <div class="chatui-inputarea">
+    <input id="chatui-input" type="text" class="chatui-input" onkeypress="handleChatUIInputEnter(event)" placeholder="Enter your message..." />
+    <button class="chatui-send-btn" onclick="tvmjsGlobalEnv.asyncOnGenerate()">Send</button>
+  </div>
+</div>
+
+<div class="chatui-extra-control">
+  <button class="chatui-reset-btn" onclick="tvmjsGlobalEnv.asyncOnReset()">Reset</button>
+  <label id="chatui-info-label"></label>
+</div>
 
 <h2 id="links">Links</h2>
 
